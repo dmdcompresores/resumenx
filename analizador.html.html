@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analizador Inteligente de Documentos PDF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librería PDF.js para leer PDFs en el navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+</head>
+<body class="bg-slate-950 min-h-screen text-slate-100 flex flex-col">
+
+    <!-- HEADER -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex justify-between items-center shadow-lg">
+        <h1 class="text-xl font-bold flex items-center gap-2">🧠 Analizador IA de Documentos PDF</h1>
+        <span class="text-xs bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full border border-blue-500/30">Motor Gemini Activo</span>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- COLUMNA 1 y 2: Formulario de Subida y Configuración -->
+        <section class="lg:col-span-2 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 flex flex-col gap-6 shadow-xl">
+            <h2 class="text-lg font-semibold text-slate-200 border-b border-slate-800 pb-3">1. Cargar Documento y Configurar Análisis</h2>
+            
+            <!-- Zona de Subida de PDF -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-slate-300">Seleccionar Archivo PDF</label>
+                <input type="file" id="inputPdf" accept=".pdf" class="file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 bg-slate-950 border border-slate-800 rounded-xl text-slate-400 cursor-pointer">
+                <span id="nombreArchivo" class="text-xs text-slate-400 italic">Ningún archivo seleccionado</span>
+            </div>
+
+            <!-- Selección de Tipo de Salida -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-slate-300">Tipo de Análisis Requerido</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <label class="border border-slate-800 bg-slate-950 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:border-blue-500 transition">
+                        <input type="radio" name="tipoAnalisis" value="Resumen" checked class="accent-blue-500">
+                        <span class="text-sm font-medium">📄 Resumen Ejecutivo</span>
+                    </label>
+                    <label class="border border-slate-800 bg-slate-950 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:border-blue-500 transition">
+                        <input type="radio" name="tipoAnalisis" value="Linea de tiempo" class="accent-blue-500">
+                        <span class="text-sm font-medium">⏳ Línea de Tiempo</span>
+                    </label>
+                    <label class="border border-slate-800 bg-slate-950 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:border-blue-500 transition">
+                        <input type="radio" name="tipoAnalisis" value="Diagrama de flujo" class="accent-blue-500">
+                        <span class="text-sm font-medium">📊 Diagrama de Flujo</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Instrucciones Detalladas para la IA -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-slate-300">Instrucciones detalladas adicionales (Opcional)</label>
+                <textarea id="instruccionesExtra" rows="3" placeholder="Ej: Enfócate únicamente en la sección financiera, usa un tono formal y destaca los riesgos..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+            </div>
+
+            <!-- Botón Ejecutar -->
+            <button id="btnAnalizar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                🚀 Procesar y Analizar con IA
+            </button>
+
+            <!-- Área de Visualización del Análisis Activo -->
+            <div class="mt-4 flex flex-col gap-2">
+                <h3 class="text-sm font-semibold text-slate-300">Resultado Actual:</h3>
+                <div id="resultadoActivo" class="bg-slate-950 border border-slate-800 rounded-xl p-4 min-h-[150px] max-h-[300px] overflow-y-auto text-sm text-slate-300 whitespace-pre-wrap">
+                    Sube un PDF y haz clic en "Procesar y Analizar" para ver el resultado aquí...
+                </div>
+            </div>
+        </section>
+
+        <!-- COLUMNA 3: Módulo de Archivos Analizados (Historial) -->
+        <section class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 flex flex-col shadow-xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                <h2 class="text-lg font-semibold text-slate-200">📁 Módulo de Archivos</h2>
+                <span id="contadorArchivos" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full">0</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">Aquí se guardan todos los análisis generados para que puedas revisarlos en cualquier momento.</p>
+            
+            <div id="listaArchivos" class="flex-1 flex flex-col gap-3 overflow-y-auto max-h-[600px] pr-1">
+                <div class="text-center text-slate-600 text-xs py-10">No hay archivos analizados todavía</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Script de Lógica -->
+    <script>
+        let textoExtraidoGlobal = "";
+        let nombrePdfActual = "";
+        const historialArchivos = [];
+
+        // Leer el PDF cuando el usuario lo seleccione
+        document.getElementById('inputPdf').addEventListener('change', async (e) => {
+            const archivo = e.target.files[0];
+            if (!archivo) return;
+
+            nombrePdfActual = archivo.name;
+            document.getElementById('nombreArchivo').innerText = `Archivo cargado: ${nombrePdfActual}`;
+            
+            const lector = new FileReader();
+            lector.onload = async function() {
+                const typedarray = new Uint8Array(this.result);
+                try {
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let textoCompleto = "";
+                    
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const pagina = await pdf.getPage(i);
+                        const contenido = await pagina.getTextContent();
+                        const textosPagina = contenido.items.map(item => item.str);
+                        textoCompleto += textosPagina.join(" ") + "\n";
+                    }
+                    textoExtraidoGlobal = textoCompleto;
+                    alert("¡PDF leído y procesado con éxito!");
+                } catch (error) {
+                    console.error("Error al leer el PDF:", error);
+                    alert("Hubo un error al leer el archivo PDF.");
+                }
+            };
+            lector.readAsArrayBuffer(archivo);
+        });
+
+        // Simulación de Análisis Inteligente (Aquí conectarías tu backend con la API de Gemini)
+        document.getElementById('btnAnalizar').addEventListener('click', () => {
+            if (!textoExtraidoGlobal) {
+                alert("Por favor, selecciona y carga un archivo PDF primero.");
+                return;
+            }
+
+            const tipo = document.querySelector('input[name="tipoAnalisis"]:checked').value;
+            const instrucciones = document.getElementById('instruccionesExtra').value;
+
+            document.getElementById('resultadoActivo').innerText = "Analizando documento con IA, por favor espera...";
+
+            // Simulamos el tiempo de respuesta de una IA analizando el texto real extraído
+            setTimeout(() => {
+                let resultadoSimulado = "";
+
+                if (tipo === "Resumen") {
+                    resultadoSimulado = `📌 RESUMEN EJECUTIVO DE: ${nombrePdfActual}\n\n` +
+                                        `- El documento aborda principalmente conceptos clave extraídos de sus ${textoExtraidoGlobal.length} caracteres de texto.\n` +
+                                        `- Conclusión principal: Se identificaron metas claras y estructuras organizacionales detalladas.\n` +
+                                        (instrucciones ? `\n*Nota personalizada aplicada:* "${instrucciones}"` : "");
+                } else if (tipo === "Linea de tiempo") {
+                    resultadoSimulado = `⏳ LÍNEA DE TIEMPO: ${nombrePdfActual}\n\n` +
+                                        `• Fase 1: Inicio del proyecto y planteamiento de objetivos iniciales.\n` +
+                                        `• Fase 2: Desarrollo operativo y ejecución de pruebas piloto.\n` +
+                                        `• Fase 3: Evaluación de resultados y entrega de conclusiones finales.\n` +
+                                        (instrucciones ? `\n*Nota personalizada aplicada:* "${instrucciones}"` : "");
+                } else {
+                    resultadoSimulado = `📊 DIAGRAMA DE FLUJO (Estructura de Procesos) de: ${nombrePdfActual}\n\n` +
+                                        `[ Inicio: Recepción de Datos ] ---> [ Validación del Contenido PDF ]\n` +
+                                        `                                            |\n` +
+                                        `                                            v\n` +
+                                        `                                  [ Análisis de Variables ]\n` +
+                                        `                                            |\n` +
+                                        `                                            v\n` +
+                                        `                                  [ Fin: Resultado Generado ]\n` +
+                                        (instrucciones ? `\n*Nota personalizada aplicada:* "${instrucciones}"` : "");
+                }
+
+                document.getElementById('resultadoActivo').innerText = resultadoSimulado;
+
+                // Guardar en el Módulo de Archivos
+                const nuevoItem = {
+                    id: Date.now(),
+                    nombre: nombrePdfActual,
+                    tipo: tipo,
+                    resultado: resultadoSimulado,
+                    fecha: new Date().toLocaleTimeString()
+                };
+
+                historialArchivos.unshift(nuevoItem);
+                actualizarModuloArchivos();
+
+            }, 1500);
+        });
+
+        // Actualizar la interfaz del módulo de archivos
+        function actualizarModuloArchivos() {
+            const contenedor = document.getElementById('listaArchivos');
+            contenedor.innerHTML = '';
+            document.getElementById('contadorArchivos').innerText = historialArchivos.length;
+
+            historialArchivos.forEach(item => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'bg-slate-950 border border-slate-800 p-3.5 rounded-xl hover:border-slate-700 transition flex flex-col gap-2';
+                tarjeta.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="font-semibold text-xs text-blue-400 truncate max-w-[150px]">${item.nombre}</span>
+                        <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">${item.tipo}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">${item.resultado.replace(/\n/g, ' ')}</p>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-900 mt-1">
+                        <span class="text-[10px] text-slate-500">${item.fecha}</span>
+                        <button onclick="verArchivo(${item.id})" class="text-xs text-blue-400 hover:underline font-medium">Ver completo</button>
+                    </div>
+                `;
+                contenedor.appendChild(tarjeta);
+            });
+        }
+
+        // Función para visualizar un archivo guardado en el visor principal
+        window.verArchivo = function(id) {
+            const archivoEncontrado = historialArchivos.find(item => item.id === id);
+            if (archivoEncontrado) {
+                document.getElementById('resultadoActivo').innerText = archivoEncontrado.resultado;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
