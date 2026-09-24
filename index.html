@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analizador Inteligente con ChatGPT (OpenAI)</title>
+    <title>Analizador de PDF Local y Gratuito (Sin IA)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Librería PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -15,19 +15,18 @@
 
     <!-- HEADER -->
     <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex justify-between items-center shadow-lg">
-        <h1 class="text-xl font-bold flex items-center gap-2">🤖 Analizador IA con ChatGPT de Documentos PDF</h1>
+        <h1 class="text-xl font-bold flex items-center gap-2">⚡ Analizador Local de PDFs (100% Gratis y Privado)</h1>
         <div class="flex items-center gap-3">
-            <input type="password" id="apiKeyInput" placeholder="Pega tu OpenAI API Key aquí" class="bg-slate-950 border border-slate-700 text-xs px-3 py-1.5 rounded-lg w-52 text-white outline-none focus:border-emerald-500">
-            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30">Listo para Conectar</span>
+            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30">Sin API Key Requerida</span>
         </div>
     </header>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- COLUMNA 1 y 2: Formulario y Configuración -->
+        <!-- COLUMNA 1 y 2: Formulario y Configuración Local -->
         <section class="lg:col-span-2 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 flex flex-col gap-6 shadow-xl">
-            <h2 class="text-lg font-semibold text-slate-200 border-b border-slate-800 pb-3">1. Cargar Documento y Configurar Análisis</h2>
+            <h2 class="text-lg font-semibold text-slate-200 border-b border-slate-800 pb-3">1. Cargar Documento y Tipo de Análisis</h2>
             
             <!-- Zona de Subida de PDF -->
             <div class="flex flex-col gap-2">
@@ -36,41 +35,41 @@
                 <span id="nombreArchivo" class="text-xs text-slate-400 italic">Ningún archivo seleccionado</span>
             </div>
 
-            <!-- Selección de Tipo de Salida -->
+            <!-- Selección de Tipo de Análisis Local -->
             <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-slate-300">Tipo de Análisis Requerido</label>
+                <label class="text-sm font-medium text-slate-300">Método de Análisis Local</label>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <label class="border border-slate-800 bg-slate-950 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:border-emerald-500 transition">
-                        <input type="radio" name="tipoAnalisis" value="Resumen Ejecutivo" checked class="accent-emerald-500">
-                        <span class="text-sm font-medium">📄 Resumen Ejecutivo</span>
+                        <input type="radio" name="tipoAnalisis" value="resumen" checked class="accent-emerald-500">
+                        <span class="text-sm font-medium">📄 Resumen Extraído (Frases Clave)</span>
                     </label>
                     <label class="border border-slate-800 bg-slate-950 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:border-emerald-500 transition">
-                        <input type="radio" name="tipoAnalisis" value="Línea de tiempo" class="accent-emerald-500">
-                        <span class="text-sm font-medium">⏳ Línea de Tiempo</span>
+                        <input type="radio" name="tipoAnalisis" value="estadisticas" class="accent-emerald-500">
+                        <span class="text-sm font-medium">📊 Estadísticas y Palabras Frecuentes</span>
                     </label>
                     <label class="border border-slate-800 bg-slate-950 p-3.5 rounded-xl flex items-center gap-3 cursor-pointer hover:border-emerald-500 transition">
-                        <input type="radio" name="tipoAnalisis" value="Diagrama de flujo detallado" class="accent-emerald-500">
-                        <span class="text-sm font-medium">📊 Diagrama de Flujo</span>
+                        <input type="radio" name="tipoAnalisis" value="datos" class="accent-emerald-500">
+                        <span class="text-sm font-medium">🔍 Extracción de Datos (Emails/Montos)</span>
                     </label>
                 </div>
             </div>
 
-            <!-- Instrucciones Detalladas -->
+            <!-- Filtro o Palabra Clave Opcional -->
             <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-slate-300">Instrucciones detalladas adicionales para la IA</label>
-                <textarea id="instruccionesExtra" rows="3" placeholder="Ej: Relaciona las ideas de ciencia y tecnología, explica cómo se retroalimentan y muestra la postura de cada persona..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-emerald-500 outline-none resize-none"></textarea>
+                <label class="text-sm font-medium text-slate-300">Filtrar por palabra clave específica (Opcional)</label>
+                <input type="text" id="palabraClave" placeholder="Ej: contrato, fecha, presupuesto..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-emerald-500 outline-none">
             </div>
 
             <!-- Botón Ejecutar -->
             <button id="btnAnalizar" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
-                🚀 Enviar a ChatGPT y Analizar Contenido
+                ⚡ Analizar Documento Localmente
             </button>
 
             <!-- Área de Visualización -->
             <div class="mt-4 flex flex-col gap-2">
-                <h3 class="text-sm font-semibold text-slate-300">Resultado Generado por la IA:</h3>
-                <div id="resultadoActivo" class="bg-slate-950 border border-slate-800 rounded-xl p-4 min-h-[180px] max-h-[350px] overflow-y-auto text-sm text-slate-300 whitespace-pre-wrap">
-                    Ingresa tu OpenAI API Key arriba, selecciona un PDF, escribe tus instrucciones y presiona procesar...
+                <h3 class="text-sm font-semibold text-slate-300">Resultado del Análisis Local:</h3>
+                <div id="resultadoActivo" class="bg-slate-950 border border-slate-800 rounded-xl p-4 min-h-[180px] max-h-[350px] overflow-y-auto text-sm text-slate-300 whitespace-pre-wrap font-mono">
+                    Selecciona un PDF, elige un método de análisis y presiona procesar...
                 </div>
             </div>
         </section>
@@ -81,22 +80,23 @@
                 <h2 class="text-lg font-semibold text-slate-200">📁 Módulo de Archivos</h2>
                 <span id="contadorArchivos" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full">0</span>
             </div>
-            <p class="text-xs text-slate-400 mb-4">Historial de análisis realizados.</p>
+            <p class="text-xs text-slate-400 mb-4">Historial de análisis locales.</p>
             
             <div id="listaArchivos" class="flex-1 flex flex-col gap-3 overflow-y-auto max-h-[600px] pr-1">
-                <div class="text-center text-slate-600 text-xs py-10">Sin archivos analizados aún</div>
+                <div class="text-center text-slate-600 text-xs py-10">Sin análisis realizados aún</div>
             </div>
         </section>
 
     </main>
 
-    <!-- Script con la conexión a la API de OpenAI (ChatGPT) -->
+    <!-- Script con la lógica de procesamiento local (Sin IA / 100% Gratis) -->
     <script>
         let textoExtraidoGlobal = "";
+        let paginasTotalesGlobal = 0;
         let nombrePdfActual = "";
         const historialArchivos = [];
 
-        // Leer PDF localmente
+        // Leer PDF localmente con PDF.js
         document.getElementById('inputPdf').addEventListener('change', async (e) => {
             const archivo = e.target.files[0];
             if (!archivo) return;
@@ -109,6 +109,7 @@
                 const typedarray = new Uint8Array(this.result);
                 try {
                     const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    paginasTotalesGlobal = pdf.numPages;
                     let textoCompleto = "";
                     
                     for (let i = 1; i <= pdf.numPages; i++) {
@@ -117,7 +118,7 @@
                         textoCompleto += contenido.items.map(item => item.str).join(" ") + "\n";
                     }
                     textoExtraidoGlobal = textoCompleto;
-                    alert("¡PDF leído correctamente! Ya puedes solicitar el análisis.");
+                    alert("¡PDF leído localmente con éxito! Ya puedes procesarlo.");
                 } catch (error) {
                     console.error("Error al leer PDF:", error);
                     alert("Error al procesar el archivo PDF.");
@@ -126,80 +127,104 @@
             lector.readAsArrayBuffer(archivo);
         });
 
-        // Botón de Análisis conectado a OpenAI API (GPT-4o-mini)
-        document.getElementById('btnAnalizar').addEventListener('click', async () => {
-            const apiKey = document.getElementById('apiKeyInput').value.trim();
-            if (!apiKey) {
-                alert("Por favor, ingresa tu clave de API de OpenAI en la barra superior.");
-                return;
-            }
+        // Botón de Análisis Local
+        document.getElementById('btnAnalizar').addEventListener('click', () => {
             if (!textoExtraidoGlobal) {
                 alert("Por favor, carga un archivo PDF primero.");
                 return;
             }
 
             const tipo = document.querySelector('input[name="tipoAnalisis"]:checked').value;
-            const instruccionesExtra = document.getElementById('instruccionesExtra').value;
+            const filtroKeyword = document.getElementById('palabraClave').value.trim().toLowerCase();
             const contenedorResultado = document.getElementById('resultadoActivo');
 
-            contenedorResultado.innerText = "⏳ ChatGPT está leyendo el documento y procesando tu solicitud...";
+            let resultadoFinal = "";
 
-            const promptFinal = `
-Actúa como un asistente de análisis experto. Analiza el siguiente texto extraído de un documento PDF titulado "${nombrePdfActual}".
-
-Tipo de salida solicitada: ${tipo}.
-Instrucciones específicas del usuario: ${instruccionesExtra}
-
-Texto completo del documento:
----
-${textoExtraidoGlobal.substring(0, 35000)}
----
-Por favor, genera una respuesta clara, profunda y estructurada cumpliendo exactamente con las instrucciones del usuario.
-            `;
-
-            try {
-                const response = await fetch("https://api.openai.com/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-4o-mini",
-                        messages: [
-                            { role: "system", content: "Eres un asistente experto en análisis de documentos." },
-                            { role: "user", content: promptFinal }
-                        ],
-                        temperature: 0.3
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
-
-                const textoGenerado = data.choices[0].message.content;
-                contenedorResultado.innerText = textoGenerado;
-
-                // Guardar en el módulo de archivos lateral
-                const nuevoItem = {
-                    id: Date.now(),
-                    nombre: nombrePdfActual,
-                    tipo: tipo,
-                    resultado: textoGenerado,
-                    fecha: new Date().toLocaleTimeString()
-                };
-
-                historialArchivos.unshift(nuevoItem);
-                actualizarModuloArchivos();
-
-            } catch (error) {
-                console.error("Error con OpenAI:", error);
-                contenedorResultado.innerText = "❌ Error al conectar con la API de OpenAI: " + error.message;
+            if (tipo === 'resumen') {
+                resultadoFinal = generarResumenExtractivo(textoExtraidoGlobal, filtroKeyword);
+            } else if (tipo === 'estadisticas') {
+                resultadoFinal = generarEstadisticas(textoExtraidoGlobal, paginasTotalesGlobal);
+            } else if (tipo === 'datos') {
+                resultadoFinal = extraerDatosEstructurados(textoExtraidoGlobal);
             }
+
+            contenedorResultado.innerText = resultadoFinal;
+
+            // Guardar en el módulo de archivos
+            const nuevoItem = {
+                id: Date.now(),
+                nombre: nombrePdfActual,
+                tipo: tipo.toUpperCase(),
+                resultado: resultadoFinal,
+                fecha: new Date().toLocaleTimeString()
+            };
+
+            historialArchivos.unshift(nuevoItem);
+            actualizarModuloArchivos();
         });
+
+        // Algoritmo 1: Resumen Extractivo por Oraciones Clave
+        function generarResumenExtractivo(texto, filtro) {
+            let oraciones = texto.match(/[^.!?]+[.!?]+/g) || [texto];
+            
+            if (filtro) {
+                oraciones = oraciones.filter(o => o.toLowerCase().includes(filtro));
+                if (oraciones.length === 0) {
+                    return `No se encontraron oraciones que contengan la palabra clave "${filtro}".`;
+                }
+            }
+
+            // Selecciona las oraciones más representativas (principio, mitad y final, o primeras 5)
+            const seleccion = oraciones.slice(0, Math.min(8, oraciones.length));
+            return `=== RESUMEN EXTRACTIVO (AUTOMÁTICO LOCAL) ===\n\n` + seleccion.map((o, index) => `${index + 1}. ${o.trim()}`).join("\n\n");
+        }
+
+        // Algoritmo 2: Estadísticas y Conteo de Palabras Frecuentes
+        function generarEstadisticas(texto, numPaginas) {
+            const palabras = texto.toLowerCase().match(/\b[a-záéíóúñ]{4,}\b/g) || [];
+            const conteo = {};
+            
+            palabras.forEach(palabra => {
+                conteo[palabra] = (conteo[palabra] || 0) + 1;
+            });
+
+            // Ordenar de mayor a menor frecuencia
+            const ordenadas = Object.entries(conteo).sort((a, b) => b[1] - a[1]);
+            const top5 = ordenadas.slice(0, 5);
+
+            const totalPalabras = texto.split(/\s+/).length;
+            const tiempoLecturaMinutos = Math.ceil(totalPalabras / 200);
+
+            let reporte = `=== ESTADÍSTICAS DEL DOCUMENTO ===\n`;
+            reporte += `• Páginas totales: ${numPaginas}\n`;
+            reporte += `• Palabras totales estimadas: ${totalPalabras}\n`;
+            reporte += `• Tiempo estimado de lectura: ~${tiempoLecturaMinutos} minuto(s)\n\n`;
+            reporte += `=== PALABRAS MÁS FRECUENTES ===\n`;
+            top5.forEach(([palabra, freq], i) => {
+                reporte += `${i + 1}. "${palabra}": ${freq} veces\n`;
+            });
+
+            return reporte;
+        }
+
+        // Algoritmo 3: Extracción de Datos (Correos, Teléfonos, Patrones Numéricos)
+        function extraerDatosEstructurados(texto) {
+            const emails = texto.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
+            const telefonos = texto.match(/(\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{4}/g) || [];
+            const montos = texto.match(/[$€£]\s?\d{1,3}(,\d{3})*(\.\d{2})?/g) || [];
+
+            let reporte = `=== DATOS EXTRAÍDOS DEL DOCUMENTO ===\n\n`;
+            reporte += `📧 Correos Electrónicos Encontrados (${emails.length}):\n`;
+            reporte += emails.length > 0 ? [...new Set(emails)].join(', ') : 'Ninguno detectado';
+            
+            reporte += `\n\n📞 Teléfonos Encontrados (${telefonos.length}):\n`;
+            reporte += telefonos.length > 0 ? [...new Set(telefonos)].join(', ') : 'Ninguno detectado';
+
+            reporte += `\n\n💰 Montos/Divisas Detectados (${montos.length}):\n`;
+            reporte += montos.length > 0 ? [...new Set(montos)].join(', ') : 'Ninguno detectado';
+
+            return reporte;
+        }
 
         function actualizarModuloArchivos() {
             const contenedor = document.getElementById('listaArchivos');
