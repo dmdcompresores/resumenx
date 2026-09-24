@@ -126,7 +126,7 @@
             lector.readAsArrayBuffer(archivo);
         });
 
-        // Botón de Análisis conectado a Google Gemini API
+        // Botón de Análisis conectado a Google Gemini API (Modelo Actualizado)
         document.getElementById('btnAnalizar').addEventListener('click', async () => {
             const apiKey = document.getElementById('apiKeyInput').value.trim();
             if (!apiKey) {
@@ -159,8 +159,8 @@ Por favor, genera una respuesta clara, profunda y estructurada cumpliendo exacta
             `;
 
             try {
-                // Llamada oficial a la API REST de Google Gemini (gemini-1.5-flash o gemini-2.5-flash)
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                // Actualizado a gemini-2.5-flash
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -196,7 +196,6 @@ Por favor, genera una respuesta clara, profunda y estructurada cumpliendo exacta
         });
 
         function reglasTexto(texto) {
-            // Evitar exceder límites de caracteres largos si el PDF es gigante (máximo aprox 30,000 caracteres para asegurar velocidad)
             return texto.length > 35000 ? 35000 : texto.length;
         }
 
@@ -233,7 +232,5 @@ Por favor, genera una respuesta clara, profunda y estructurada cumpliendo exacta
     </script>
 </body>
 </html>
-        }
-    </script>
 </body>
 </html>
